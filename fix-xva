@@ -1,0 +1,28 @@
+#!/usr/bin/env node
+
+const fs = require("fs");
+const tar = require("tar");
+const tmp = require("os").tmpdir();
+
+const xva = process.argv[2];
+const file = "ova.xml";
+const path = require("path").join(tmp, file);
+
+tar.x({ cwd: tmp, file: xva, sync: true }, [file]);
+try {
+  fs.writeFileSync(
+    path,
+    fs
+      .readFileSync(path, "utf8")
+      .replace(
+        /(<name>product_version<\/name><value>).+?(<\/value>)|(<name>xapi_major<\/name><value>).+?(<\/value><\/member><member><name>xapi_minor<\/name><value>).+?(<\/value>)/g,
+        (_, pvPrefix, pvSuffix, xvPrefix, xvInter, xvSuffix) =>
+          pvPrefix !== undefined
+            ? `${pvPrefix}6.0.0${pvSuffix}`
+            : `${xvPrefix}1${xvInter}3${xvSuffix}`
+      )
+  );
+  tar.r({ cwd: tmp, file: xva, sync: true }, [file]);
+} finally {
+  fs.unlinkSync(path);
+}
