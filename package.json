@@ -3,7 +3,7 @@
     "fix-xva": "fix-xva"
   },
   "dependencies": {
-    "tar": "^5.0.5"
+    "tar": "^5.0.7"
   },
   "name": "fix-xva",
   "private": true
